@@ -1,4 +1,6 @@
 module.exports = function(app, con){
+
+	// user_info: get all basic information of user given 'id' android_id
 	app.get('/user_info', function(req, res){
 		con.query(`SELECT * FROM users WHERE android_id=${con.escape(req.query.id)}`, function(err, result){
 			if(err){
@@ -14,6 +16,7 @@ module.exports = function(app, con){
 		})
 	})
 
+	// add_user: given android_id, user_id, color_1, color_2 add user information to database
 	app.post('/add_user', function(req, res){
 		var android_id = con.escape(req.body.android_id)
 		var user_id = con.escape(req.body.user_id)
@@ -31,4 +34,5 @@ module.exports = function(app, con){
 			res.send(true)
 		})
 	})
+	
 }

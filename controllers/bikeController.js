@@ -1,8 +1,6 @@
-// 20 energy / 5 min biking - 10 per penalty
-
 module.exports = function(app, con){
 
-	// add biking session and update energy levels
+	// add_session: add session information to database and update energy levels
 	app.post('/add_session', function(req, res){
 		var user_id = con.escape(req.body.user_id)
 		var distance = req.body.distance
@@ -17,6 +15,7 @@ module.exports = function(app, con){
 				return
 			}
 
+			// Energy: 20 points per 5 mins of biking - 10 points per penalty
 			var new_energy = Math.floor(20 * duration/300) - 10 * req.body.penalties.length
 			if(new_energy < 0) new_energy = 0
 			var sql = `UPDATE users SET energy=energy + ${new_energy} WHERE user_id=${user_id}`
@@ -33,7 +32,5 @@ module.exports = function(app, con){
 			})
 		})
 	})
-	// [todo] check for achievements
-
-	// [todo] get history of all biking sessions
+	
 }

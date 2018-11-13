@@ -1,5 +1,6 @@
 module.exports = function(app, con){
-	// [todo] get user battle info
+
+	// get_battle_info: given user_id, if user in battle return battle information, else return false
 	app.get('/get_battle_info', function(req, res){
 		var user_id = con.escape(req.query.user_id)
 		var sql = `SELECT * FROM friends WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
@@ -43,6 +44,7 @@ module.exports = function(app, con){
 
 	// [todo] enter battle
 
-	// [todo] fire at battling person + handle battle logic (update friends table, determine if winner, change user wins/loss)
-
+	// [todo] fire at battling person
+	// [todo] battle logic (update friends table, determine if winner, change user wins/loss)
+	
 }

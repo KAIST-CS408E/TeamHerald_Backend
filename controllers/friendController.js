@@ -1,5 +1,6 @@
 module.exports = function(app, con){
-	// add friend
+
+	// add_friend: add user_id, friend_id friendship to database
 	app.post('/add_friend', function(req, res){
 		var sql = `INSERT INTO friends (friend1_id, friend2_id) VALUES (${con.escape(req.body.user_id)}, ${con.escape(req.body.friend_id)})`
 		con.query(sql, function(err, result){
@@ -13,7 +14,7 @@ module.exports = function(app, con){
 		})
 	})
 
-	// get all friends: user_id, color_1, color_2 and level to display in frieds list
+	// get_friends: get user_id, color_1, color_2 and level for all of user_id friends
 	app.get('/get_friends', function(req, res){
 		var sql = `SELECT friend1_id, friend2_id FROM friends WHERE friend1_id=${con.escape(req.query.user_id)} OR friend2_id=${con.escape(req.query.user_id)}`
 		con.query(sql, function(err, result){
@@ -34,4 +35,5 @@ module.exports = function(app, con){
 			})
 		})
 	})
+	
 }
