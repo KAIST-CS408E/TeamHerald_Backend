@@ -37,3 +37,7 @@ battleController(app, con)
 app.listen(8000, function(){
 	console.log('server up')
 })
+
+con.query('SELECT * FROM friends', function(err, result){
+	console.log(result)
+})
