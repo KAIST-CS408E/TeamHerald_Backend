@@ -26,9 +26,7 @@ module.exports = function(app, con){
 					return
 				}
 
-				con.query(`SELECT * FROM users WHERE user_id=${user_id}`, function(err, result){
-					res.send({res: result, energy: new_energy})
-				})
+				res.send(true)
 			})
 		})
 	})

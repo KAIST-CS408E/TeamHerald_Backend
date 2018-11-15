@@ -26,16 +26,6 @@ module.exports = function(app, con){
 									opp_hp: is_friend1 ? temp.health2_point : temp.health1_point
 								 }
 
-				// if user lost battle, reset database information and return fact that battle lost
-				if(user_hp <= 0){
-					battle_obj.lost_battle = true
-					var sql = `UPDATE friends SET in_battle=false, health1_point=100, health2_point=100 
-											WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
-					con.query(sql, function(err, result){
-						if(err) console.log(err)
-					})
-				}
-
 				// get opponent's information
 				var sql = `SELECT color_1, color_2, level FROM users WHERE user_id=${con.escape(opponent_id)}`
 				con.query(sql, function(err, result){
@@ -90,59 +80,92 @@ module.exports = function(app, con){
 	app.post('/fire_laser', function(req, res){
 		var user_id = con.escape(req.body.user_id)
 		var opp_id = con.escape(req.body.opp_id)
-		var energy_points = con.escape(req.body.energy_points)
 
-		var sql = `SELECT * FROM friends WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
+		var sql = `SELECT energy FROM users WHERE user_id=${user_id}`
 		con.query(sql, function(err, result){
-			if(err){
+			if(err || result.length == 0){
 				console.log(err)
 				res.send(false)
 				return
 			}
 
-			if(result.length != 1)
-				res.send(false)
-			else{
-				var is_friend1 = req.query.user_id == result[0].friend1_id
-				var opp_hp = is_friend1 ? result[0].health2_point : result[0].health1_point
-				var new_opp_hp = opp_hp - energy_points
+			var energy_points = result[0].energy
 
-				// check if user killed opponent, and update wins and losses
-				if(new_opp_hp <= 0){
-					var sql = `UPDATE users SET losses=losses+1 WHERE user_id=${opp_id}`
-					con.query(sql, function(err, result){
-						if(err) console.log(err)
-					})
-					var sql = `UPDATE users SET wins=wins+1 WHERE user_id=${user_id}` 
-					con.query(sql, function(err, result){
-						if(err) console.log(err)
-					})
+			var sql = `SELECT * FROM friends WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
+			con.query(sql, function(err, result){
+				if(err){
+					console.log(err)
+					res.send(false)
+					return
 				}
 
-				// use up all of users energy
-				// [todo] update users level if necessary
-				var sql = `UPDATE users SET energy=0 WHERE user_id=${user_id}`
-				con.query(sql, function(err, result){
-					if(err){
-						console.log(err)
-						res.send(false)
-						return
+				if(result.length != 1)
+					res.send(false)
+				else{
+					var is_friend1 = req.body.user_id == result[0].friend1_id
+					var opp_hp = is_friend1 ? result[0].health2_point : result[0].health1_point
+					var new_opp_hp = opp_hp - energy_points
+
+					// check if user killed opponent, and update wins and losses
+					if(new_opp_hp <= 0){
+						var sql = 
+						con.query(`UPDATE users SET losses=losses+1 WHERE user_id=${opp_id}`, function(err, result){
+							if(err) console.log(err)
+						})
+
+						// update user's wins and user's level: user_level=n, increase if sum of 1 to n = number of wins 
+						con.query(`SELECT level, wins FROM users WHERE user_id=${user_id}`, function(err, result){
+							if(err){
+								console.log(err)
+								return
+							}
+
+							var curr_level = result[0].level
+							var sum_to_level = (curr_level + 1) * curr_level / 2
+							var wins = result[0].wins + 1 // increase wins
+							var new_level = wins == ((curr_level + 1) * curr_level / 2) ? curr_level + 1 : curr_level
+
+							con.query(`UPDATE users SET level=${new_level}, wins=wins+1 WHERE user_id=${user_id}`, function(err, result){
+								if(err) console.log(err)
+							})
+						})
 					}
-					
-					// update the opponent's health points in the battle
-					var sql = `UPDATE friends SET health${is_friend1 ? `2` : `1`}_point=${new_opp_hp}
-											WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
+
+					// use up all of users energy
+					var sql = `UPDATE users SET energy=energy-${energy_points} WHERE user_id=${user_id}`
 					con.query(sql, function(err, result){
 						if(err){
 							console.log(err)
 							res.send(false)
 							return
 						}
+						
+						// update the opponent's health points in the battle, or finish battle
+						var sql = new_opp_hp <= 0 ? 
+									`UPDATE friends SET in_battle=false, health1_point=100, health2_point=100 
+												WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true` :
+									`UPDATE friends SET health${is_friend1 ? `2` : `1`}_point=${new_opp_hp}
+													WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
+						con.query(sql, function(err, result){
+							if(err){
+								console.log(err)
+								res.send(false)
+								return
+							}
 
-						res.send({won_battle: new_opp_hp <= 0})
+							res.send({won_battle: new_opp_hp <= 0, remaining_hp: new_opp_hp})
+
+							// create update_info fot loser
+							if(new_opp_hp <= 0){
+								var sql = `UPDATE users SET update_info=JSON_OBJECT("lost_battle", true, "opp_id", ${user_id}) WHERE user_id=${opp_id}`
+								con.query(sql, function(err, result){
+									if(err) console.log(err)
+								})
+							}
+						})
 					})
-				})
-			}
+				}
+			})
 		})
 	})
 
