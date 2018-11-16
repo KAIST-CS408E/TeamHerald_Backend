@@ -33,10 +33,15 @@ bikeController(app, con)
 friendController(app, con)
 battleController(app, con)
 
-// start the server
-app.listen(8000, function(){
-	console.log('server up')
+app.get('/', function(req, res){
+	res.send("heroku working")
 })
+
+// start the server
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+    console.log(`Our app is running on port ${ PORT }`);
+});
 
 con.query('SELECT * FROM friends', function(err, result){
 	console.log(result)
