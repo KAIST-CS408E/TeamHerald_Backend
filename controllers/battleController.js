@@ -155,9 +155,10 @@ module.exports = function(app, con){
 
 							res.send({won_battle: new_opp_hp <= 0, remaining_hp: new_opp_hp})
 
+							var update_info_str = con.escape(JSON.stringify({lost_battle: true, opp_id: req.body.user_id}))
 							// create update_info fot loser
 							if(new_opp_hp <= 0){
-								var sql = `UPDATE users SET update_info=JSON_OBJECT("lost_battle", true, "opp_id", ${user_id}) WHERE user_id=${opp_id}`
+								var sql = `UPDATE users SET update_info=${update_info_str} WHERE user_id=${opp_id}`
 								con.query(sql, function(err, result){
 									if(err) console.log(err)
 								})
