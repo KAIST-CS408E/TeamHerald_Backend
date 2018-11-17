@@ -45,6 +45,24 @@ module.exports = function(app, con){
 		})
 	})
 
+	// verify_user_id: check that user id does not contain symbols and is not already userd
+	app.get('/verify_user_id', function(req, res){
+		var user_id = req.query.user_id
+		var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+
+		if(format.test(user_id)){
+			res.send({is_valid: false})	
+		}else{
+			con.query(`SELECT * FROM users WHERE user_id=${con.escape(user_id)}`, function(err, result){
+				if(err || result.length > 0)
+					res.send({is_valid: false})
+				else
+					res.send({is_valid: true})
+			})
+		}
+
+	})
+
 	// add_user: given android_id, user_id, color_1, color_2 add user information to database
 	app.post('/add_user', function(req, res){
 		var android_id = con.escape(req.body.android_id)
