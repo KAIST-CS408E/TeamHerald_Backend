@@ -9,6 +9,11 @@ module.exports = function(app, con){
 				return
 			}
 
+			if(result.length == 0){
+				res.send(false)
+				return
+			}
+
 			// if update_info exists, return and remove from database
 			result[0].update_info = JSON.parse(result[0].update_info)
 			if(result[0].update_info){
@@ -18,10 +23,7 @@ module.exports = function(app, con){
 				})
 			}
 
-			if(result.length > 0)
-				res.send(result[0])
-			else
-				res.send(false)
+			res.send(result[0])
 		})
 	})
 
@@ -31,8 +33,9 @@ module.exports = function(app, con){
 		var user_id = con.escape(req.body.user_id)
 		var color_1 = con.escape(req.body.color_1)
 		var color_2 = con.escape(req.body.color_2)
-		var sql = `INSERT INTO users (android_id, user_id, color_1, color_2, update_info) 
-							  VALUES (${android_id}, ${user_id}, ${color_1}, ${color_2}, NULL)`
+		var color_3 = con.escape(req.body.color_3)
+		var sql = `INSERT INTO users (android_id, user_id, color_1, color_2, color_3, update_info) 
+							  VALUES (${android_id}, ${user_id}, ${color_1}, ${color_2}, ${color_3}, NULL)`
 		con.query(sql, function(err, result){
 			if(err){
 				console.log(err)
