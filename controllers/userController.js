@@ -10,7 +10,7 @@ module.exports = function(app, con){
 			}
 
 			if(result.length == 0){
-				res.send(false)
+				res.send({})
 				return
 			}
 
@@ -39,11 +39,11 @@ module.exports = function(app, con){
 		con.query(sql, function(err, result){
 			if(err){
 				console.log(err)
-				res.send(false)
+				res.send({success: false})
 				return
 			}
 
-			res.send(true)
+			res.send({success: true})
 		})
 	})
 	

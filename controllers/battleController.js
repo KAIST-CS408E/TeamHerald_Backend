@@ -7,7 +7,7 @@ module.exports = function(app, con){
 		con.query(sql, function(err, result){
 			if(err){
 				console.log(err)
-				res.send(false)
+				res.send({})
 				return
 			}
 
@@ -31,7 +31,7 @@ module.exports = function(app, con){
 				con.query(sql, function(err, result){
 					if(err){
 						console.log(err)
-						res.send(false)
+						res.send({})
 						return
 					}
 
@@ -54,23 +54,23 @@ module.exports = function(app, con){
 		con.query(sql, function(err, result){
 			if(err){
 				console.log(err)
-				res.send(false)
+				res.send({success: false})
 				return
 			}
 
 			// check that user is not already in battle
 			if(result.length > 0)
-				res.send(false)
+				res.send({success: false})
 			else{
 				var sql = `UPDATE friends SET in_battle=true WHERE (friend1_id=${user_id} OR friend1_id=${opp_id}) AND (friend2_id=${user_id} OR friend2_id=${opp_id})`
 				con.query(sql, function(err, result){
 					if(err){
 						console.log(err)
-						res.send(false)
+						res.send({success: false})
 						return
 					}
 
-					res.send(true)
+					res.send({success: true})
 				})
 			}
 		})
@@ -85,7 +85,7 @@ module.exports = function(app, con){
 		con.query(sql, function(err, result){
 			if(err || result.length == 0){
 				console.log(err)
-				res.send(false)
+				res.send({})
 				return
 			}
 
@@ -95,12 +95,12 @@ module.exports = function(app, con){
 			con.query(sql, function(err, result){
 				if(err){
 					console.log(err)
-					res.send(false)
+					res.send({})
 					return
 				}
 
 				if(result.length != 1)
-					res.send(false)
+					res.send({})
 				else{
 					var is_friend1 = req.body.user_id == result[0].friend1_id
 					var opp_hp = is_friend1 ? result[0].health2_point : result[0].health1_point
@@ -136,7 +136,7 @@ module.exports = function(app, con){
 					con.query(sql, function(err, result){
 						if(err){
 							console.log(err)
-							res.send(false)
+							res.send({})
 							return
 						}
 						
@@ -149,7 +149,7 @@ module.exports = function(app, con){
 						con.query(sql, function(err, result){
 							if(err){
 								console.log(err)
-								res.send(false)
+								res.send({})
 								return
 							}
 
