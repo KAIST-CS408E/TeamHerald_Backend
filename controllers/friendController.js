@@ -13,7 +13,7 @@ module.exports = function(app, con){
 			}else{
 				var sql = `SELECT * FROM friends WHERE (friend1_id=${userId} AND friend2_id=${friendId}) 
 												    OR (friend1_id=${friendId} OR friend2_id=${userId})`
-				con.queru(sql, function(err, result){
+				con.query(sql, function(err, result){
 					if (err || result.length > 0){
 						console.log(err)
 						res.send({is_success: false})
