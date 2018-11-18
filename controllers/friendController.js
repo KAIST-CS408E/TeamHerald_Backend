@@ -12,7 +12,7 @@ module.exports = function(app, con){
 				return;
 			}else{
 				var sql = `SELECT * FROM friends WHERE (friend1_id=${userId} AND friend2_id=${friendId}) 
-												    OR (friend1_id=${friendId} OR friend2_id=${userId})`
+												    OR (friend1_id=${friendId} AND friend2_id=${userId})`
 				con.query(sql, function(err, result){
 					if (err || result.length > 0){
 						console.log(err)
