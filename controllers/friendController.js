@@ -24,7 +24,7 @@ module.exports = function(app, con){
 				return
 			}
 			var friend_str = result.map(entry => entry.friend1_id === req.query.user_id ? con.escape(entry.friend2_id) : con.escape(entry.friend1_id)).join(', ')
-			con.query(`SELECT user_id, color_1, color_2, level FROM users WHERE user_id IN (${friend_str})`, function(err, result){
+			con.query(`SELECT user_id, color_1, color_2, color_3, level FROM users WHERE user_id IN (${friend_str})`, function(err, result){
 				if(err){
 					console.log(err)
 					res.send([])

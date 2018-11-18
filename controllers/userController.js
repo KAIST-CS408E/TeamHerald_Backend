@@ -45,7 +45,7 @@ module.exports = function(app, con){
 		})
 	})
 
-	// verify_user_id: check that user id does not contain symbols and is not already userd
+	// verify_user_id: check that user id does not contain symbols and is not already used
 	app.get('/verify_user_id', function(req, res){
 		var user_id = req.query.user_id
 		var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
