@@ -27,7 +27,7 @@ module.exports = function(app, con){
 								 }
 
 				// get opponent's information
-				var sql = `SELECT color_1, color_2, level FROM users WHERE user_id=${con.escape(opponent_id)}`
+				var sql = `SELECT color_1, color_2, color_3, level FROM users WHERE user_id=${con.escape(opponent_id)}`
 				con.query(sql, function(err, result){
 					if(err){
 						console.log(err)
@@ -37,6 +37,7 @@ module.exports = function(app, con){
 
 					battle_obj.opp_color_1 = result[0].color_1
 					battle_obj.opp_color_2 = result[0].color_2
+					battle_obj.opp_color_3 = result[0].color_3
 					battle_obj.opp_level = result[0].level
 
 					res.send(battle_obj)
