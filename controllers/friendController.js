@@ -35,5 +35,11 @@ module.exports = function(app, con){
 			})
 		})
 	})
+
+	app.get("/get_all_users", function(req, res){
+		con.query(`SELECT user_id, color_1, color_2, color_3, level FROM users`, function(err, result){
+			res.send(result)
+		})
+	})
 	
 }
