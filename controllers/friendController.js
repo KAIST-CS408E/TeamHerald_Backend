@@ -2,15 +2,24 @@ module.exports = function(app, con){
 
 	// add_friend: add user_id, friend_id friendship to database
 	app.post('/add_friend', function(req, res){
-		var sql = `INSERT INTO friends (friend1_id, friend2_id) VALUES (${con.escape(req.body.user_id)}, ${con.escape(req.body.friend_id)})`
+		var sql = `SELECT * FROM users WHERE user_id=${con.escape(req.body.friend_id)}`
 		con.query(sql, function(err, result){
-			if(err){
+			if (err || result.length == 0){
 				console.log(err)
-				res.send([])
-				return
-			}
+				res.send({is_success: false})
+				return;
+			}else{
+				var sql = `INSERT INTO friends (friend1_id, friend2_id) VALUES (${con.escape(req.body.user_id)}, ${con.escape(req.body.friend_id)})`
+				con.query(sql, function(err, result){
+					if(err){
+						console.log(err)
+						res.send({is_success: false})
+						return
+					}
 
-			con.query('SELECT * FROM friends', function(err, result){res.send(result)})
+					res.send({is_success: true})
+				})
+			}
 		})
 	})
 
