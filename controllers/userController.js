@@ -27,21 +27,50 @@ module.exports = function(app, con){
 		})
 	})
 
-	// get_user: get user info using user_id
+	// get_user: get all user info using user_id
 	app.get('/get_user', function(req, res){
+		// Get user data
+		var data = {userData: {}, friends: [], sessions: []}
 		con.query(`SELECT * FROM users WHERE user_id=${con.escape(req.query.id)}`, function(err, result){
-			if(err){
+			if(err || result.length == 0){
 				console.log(err)
-				res.send()
+				res.send(data)
 				return
 			}
 
-			if(result.length == 0){
-				res.send({})
-				return
-			}
+			data.userData = result[0]
 
-			res.send(result[0])
+			// Get list of friends
+			var sql = `SELECT friend1_id, friend2_id FROM friends WHERE friend1_id=${con.escape(req.query.user_id)} OR friend2_id=${con.escape(req.query.user_id)}`
+			con.query(sql, function(err, result){
+				if(err){
+					console.log(err)
+					res.send(data)
+					return
+				}
+				var friend_str = result.map(entry => entry.friend1_id === req.query.user_id ? con.escape(entry.friend2_id) : con.escape(entry.friend1_id)).join(', ')
+				con.query(`SELECT user_id, color_1, color_2, color_3, level FROM users WHERE user_id IN (${friend_str})`, function(err, result){
+					if(err){
+						console.log(err)
+						res.send(data)
+						return
+					}
+
+					data.friends = result
+					var sql = `SELECT datetime, duration, distance, penalty FROM sessions WHERE user_id=${con.escape(req.query.user_id)}`
+					con.query(sql, function(err, result){
+						if(err){
+							console.log(err)
+							res.send(data)
+							return
+						}
+
+						data.sessions = result
+						res.send(data)
+					})
+
+				})
+			})
 		})
 	})
 
