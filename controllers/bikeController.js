@@ -14,8 +14,10 @@ module.exports = function(app, con){
 				res.send({success: false})
 				return
 			}
-			var changePowerStr = "IF(power+2 > 10, 10, power+2)"
-			if(req.body.penalties.length > 0)
+			var changePowerStr = "power"
+			if(req.body.duration >= 300 & req.body.penalties.length == 0)
+				changePowerStr = "IF(power+2 > 10, 10, power+2)"
+			else if(req.body.penalties.length > 0)
 				changePowerStr = "IF(power-2 < 1, 1, power-2)"
 
 			// Energy: 20 points per 5 mins of biking - 10 points per penalty
