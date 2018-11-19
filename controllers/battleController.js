@@ -82,7 +82,7 @@ module.exports = function(app, con){
 		var user_id = con.escape(req.body.user_id)
 		var opp_id = con.escape(req.body.opp_id)
 
-		var sql = `SELECT energy FROM users WHERE user_id=${user_id}`
+		var sql = `SELECT energy, power FROM users WHERE user_id=${user_id}`
 		con.query(sql, function(err, result){
 			if(err || result.length == 0){
 				console.log(err)
@@ -90,6 +90,7 @@ module.exports = function(app, con){
 				return
 			}
 
+			var power_points = result[0].power
 			var energy_points = result[0].energy
 
 			var sql = `SELECT * FROM friends WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
@@ -106,15 +107,8 @@ module.exports = function(app, con){
 					var is_friend1 = req.body.user_id == result[0].friend1_id
 					var opp_hp = is_friend1 ? result[0].health2_point : result[0].health1_point
 					var new_opp_hp = opp_hp;
-					if(energy_points < 10){
-						new_opp_hp -= energy_points
-						energy_points = 0
-					}else{
-						new_opp_hp -= 10
-						energy_points -= 10
-					}
-					
-
+					new_opp_hp -= power_points
+					energy_points -= 10
 
 					// check if user killed opponent, and update wins and losses
 					if(new_opp_hp <= 0){
