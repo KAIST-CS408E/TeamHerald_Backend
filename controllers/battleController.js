@@ -105,9 +105,15 @@ module.exports = function(app, con){
 				else{
 					var is_friend1 = req.body.user_id == result[0].friend1_id
 					var opp_hp = is_friend1 ? result[0].health2_point : result[0].health1_point
-					var new_opp_hp = opp_hp - 10
-					if(energy_points < 10)
-						new_opp_hp = opp_hp - energy_points
+					var new_opp_hp = opp_hp;
+					if(energy_points < 10){
+						new_opp_hp -= energy_points
+						energy_points = 0
+					}else{
+						new_opp_hp -= 10
+						energy_points -= 10
+					}
+					
 
 
 					// check if user killed opponent, and update wins and losses
@@ -136,9 +142,7 @@ module.exports = function(app, con){
 					}
 
 					// use up all of users energy
-					var sql = `UPDATE users SET energy=energy-10 WHERE user_id=${user_id}`
-					if(energy_points < 10)
-						sql = `UPDATE users SET energy=energy-${energy_points} WHERE user_id=${user_id}`
+					var sql = `UPDATE users SET energy=${energy_points} WHERE user_id=${user_id}`
 					con.query(sql, function(err, result){
 						if(err){
 							console.log(err)
@@ -159,7 +163,7 @@ module.exports = function(app, con){
 								return
 							}
 
-							res.send({won_battle: new_opp_hp <= 0, remaining_hp: new_opp_hp})
+							res.send({won_battle: new_opp_hp <= 0, remaining_hp: new_opp_hp, remaining_energy: energy_points})
 
 							var update_info_str = con.escape(JSON.stringify({lost_battle: true, opp_id: req.body.user_id}))
 							// create update_info fot loser
