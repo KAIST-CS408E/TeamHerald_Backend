@@ -77,10 +77,10 @@ function checkAchievements(userId, isSafe, achievements, con){
 		}
 
 		if(result.length >= 10)
-			achievements = achievements.pushIfNotInclude(13, achievements) // [13, "Hobbyist", "Log 500 biking sessions"],
+			achievements = pushIfNotInclude(13, achievements) // [13, "Hobbyist", "Log 500 biking sessions"],
 		var safeSessions = result.filter(obj => obj.penalty === "[]")
 		if(safeSessions.length >= 5)
-			achievements = achievements.pushIfNotInclude(14, achievements) // [14, "Better Safe than Sorry", "Log 250 biking safe sessions"],
+			achievements = pushIfNotInclude(14, achievements) // [14, "Better Safe than Sorry", "Log 250 biking safe sessions"],
 		var achievementsStr = con.escape(JSON.stringify(achievements))
 		var sql = `UPDATE users SET achievements_list=${achievementsStr} WHERE user_id=${userId}`
 		con.query(sql, function(err, result){
