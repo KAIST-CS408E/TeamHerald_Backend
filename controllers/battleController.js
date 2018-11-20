@@ -132,9 +132,11 @@ module.exports = function(app, con){
 							var wins = result[0].wins + 1 // increase wins
 							var new_level = wins == ((curr_level + 1) * curr_level / 2) ? curr_level + 1 : curr_level
 
-							checkAchievements(user_hp, wins, result[0].losses, new_level, achievementsList)
+							achievementsList = checkAchievements(user_hp, wins, result[0].losses, new_level, achievementsList)
 
 							var achievementsStr = con.escape(JSON.stringify(achievementsList))
+
+							console.log(achievementsStr)
 
 							var sql = `UPDATE users SET level=${new_level}, wins=wins+1, achievements_list=${achievementsStr} WHERE user_id=${user_id}`
 							con.query(sql, function(err, result){
@@ -186,31 +188,35 @@ module.exports = function(app, con){
 function checkAchievements(health, wins, losses, level, achievements){
 	var achievements = []
 	if(wins >= 1)
-		pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
+		achievements = pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
 	if(wins >= 10)
-		pushIfNotInclude(9, achievements) // [(9), "Climbing the Ladder", "Get 10 wins"],
+		achievements = pushIfNotInclude(9, achievements) // [(9), "Climbing the Ladder", "Get 10 wins"],
 	if(wins >= 25)
-		pushIfNotInclude(11, achievements) // [11, "Top of the World", "Get 25 wins"],
+		achievements = pushIfNotInclude(11, achievements) // [11, "Top of the World", "Get 25 wins"],
 	if(wins >= 50)
-		pushIfNotInclude(10, achievements) // [10, "Space Pirate", "Get 50 wins"],
+		achievements = pushIfNotInclude(10, achievements) // [10, "Space Pirate", "Get 50 wins"],
 	if(wins >= 100)
-		pushIfNotInclude(7, achievements) // [7, "Destroyer", "Get 100 wins"],
+		achievements = pushIfNotInclude(7, achievements) // [7, "Destroyer", "Get 100 wins"],
 
 	if(health <= 10)
-		pushIfNotInclude(2, achievements) // [2, "Clutch", "Barely beat your opponent"],
+		achievements = pushIfNotInclude(2, achievements) // [2, "Clutch", "Barely beat your opponent"],
 	else if(health > 50)
-		pushIfNotInclude(18, achievements) // [18, "Easy Peasy", "Kill an opponent with more than half your health remaining"],
+		achievements = pushIfNotInclude(18, achievements) // [18, "Easy Peasy", "Kill an opponent with more than half your health remaining"],
 
 	if(level == 15)
-		pushIfNotInclude(12, achievements) // [12, "Leveling Up", "Get to Level 15"],
+		achievements = pushIfNotInclude(12, achievements) // [12, "Leveling Up", "Get to Level 15"],
 
 	if(wins + losses == 50 && wins/50 > 0.6)
-		pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
+		achievements = pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
+
+	return achievements
 }
 
 function pushIfNotInclude(item, list){
 	if(!list.includes(item))
 		list.push(item)
+
+	return list
 }
 
 /* Not possible 
