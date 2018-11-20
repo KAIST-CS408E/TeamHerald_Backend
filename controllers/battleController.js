@@ -186,7 +186,6 @@ module.exports = function(app, con){
 }
 
 function checkAchievements(health, wins, losses, level, achievements){
-	var achievements = []
 	if(wins >= 1)
 		achievements = pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
 	if(wins >= 10)
