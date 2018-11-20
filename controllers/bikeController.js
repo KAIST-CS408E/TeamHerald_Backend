@@ -15,7 +15,7 @@ module.exports = function(app, con){
 
 			var distance = req.body.distance
 			var duration = req.body.duration
-			var penalties_str = con.escape('[' + req.body.penalties.map(entry => con.escape(entry)).join(', ') + ']')
+			var penalties_str = con.escape('[' + req.body.penalty.map(entry => con.escape(entry)).join(', ') + ']')
 
 			var sql = `INSERT INTO sessions (user_id, duration, distance, penalty) VALUES (${user_id}, ${distance}, ${duration}, ${penalties_str})`
 			con.query(sql, function(err, result){
