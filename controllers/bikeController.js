@@ -31,7 +31,7 @@ module.exports = function(app, con){
 				else if(req.body.penalty.length > 0)
 					changePowerStr = "IF(power-2 < 1, 1, power-2)"
 
-				checkAchievements(user_id, req.body.penalty.length == 0, achievementsList)
+				checkAchievements(user_id, req.body.penalty.length == 0, achievementsList, con)
 
 				// Energy: 20 points per 5 mins of biking - 10 points per penalty
 				var new_energy = Math.floor(20 * duration/300) - 10 * req.body.penalty.length
