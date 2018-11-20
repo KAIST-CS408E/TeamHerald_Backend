@@ -188,13 +188,13 @@ module.exports = function(app, con){
 function checkAchievements(health, wins, losses, level, achievements){
 	if(wins >= 1)
 		achievements = pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
-	if(wins >= 10)
+	if(wins >= 3)
 		achievements = pushIfNotInclude(9, achievements) // [(9), "Climbing the Ladder", "Get 10 wins"],
-	if(wins >= 25)
+	if(wins >= 5)
 		achievements = pushIfNotInclude(11, achievements) // [11, "Top of the World", "Get 25 wins"],
-	if(wins >= 50)
+	if(wins >= 10)
 		achievements = pushIfNotInclude(10, achievements) // [10, "Space Pirate", "Get 50 wins"],
-	if(wins >= 100)
+	if(wins >= 50)
 		achievements = pushIfNotInclude(7, achievements) // [7, "Destroyer", "Get 100 wins"],
 
 	if(health <= 10)
@@ -202,10 +202,10 @@ function checkAchievements(health, wins, losses, level, achievements){
 	else if(health > 50)
 		achievements = pushIfNotInclude(18, achievements) // [18, "Easy Peasy", "Kill an opponent with more than half your health remaining"],
 
-	if(level == 15)
+	if(level == 5)
 		achievements = pushIfNotInclude(12, achievements) // [12, "Leveling Up", "Get to Level 15"],
 
-	if(wins + losses == 50 && wins/50 > 0.6)
+	if(wins + losses >= 10 && wins/(wins + losses) > 0.6)
 		achievements = pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
 
 	return achievements
