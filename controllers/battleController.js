@@ -134,7 +134,7 @@ module.exports = function(app, con){
 
 							checkAchievements(user_hp, wins, result[0].losses, new_level, achievementsList)
 
-							var achievementsStr = con.escape(JSON.stringify(achievements_list))
+							var achievementsStr = con.escape(JSON.stringify(achievementsList))
 
 							var sql = `UPDATE users SET level=${new_level}, wins=wins+1, achievements_list=${achievementsStr} WHERE user_id=${user_id}`
 							con.query(sql, function(err, result){
