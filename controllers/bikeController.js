@@ -61,3 +61,14 @@ module.exports = function(app, con){
 	})
 	
 }
+/*
+            [5, "Smooth Riding", "Have a perfectly safe biking session"],
+            [13, "Hobbyist", "Log 500 biking sessions"],
+            [14, "Better Safe than Sorry", "Log 250 biking safe sessions"],
+*/
+
+/* Not possible yet
+    [6, "Perfection", "Kill an opponent with only safe sessions"],
+    [15, "Safe Landing", "Get 50 consecutive safe sessions"],
+    [16, "Getting There", "Get 10 consecutive safe sessions"],
+*/

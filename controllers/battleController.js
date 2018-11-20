@@ -106,6 +106,7 @@ module.exports = function(app, con){
 				else{
 					var is_friend1 = req.body.user_id == result[0].friend1_id
 					var opp_hp = is_friend1 ? result[0].health2_point : result[0].health1_point
+					var user_hp = is_friend1 ? result[0].health1_point : result[0].health2_point
 					var new_opp_hp = opp_hp;
 					new_opp_hp -= power_points
 					energy_points -= 10
@@ -118,18 +119,25 @@ module.exports = function(app, con){
 						})
 
 						// update user's wins and user's level: user_level=n, increase if sum of 1 to n = number of wins 
-						con.query(`SELECT level, wins FROM users WHERE user_id=${user_id}`, function(err, result){
+						con.query(`SELECT level, wins, losses, achievements_list FROM users WHERE user_id=${user_id}`, function(err, result){
 							if(err){
 								console.log(err)
 								return
 							}
+
+							var achievementsList = JSON.parse(result[0].achievements)
 
 							var curr_level = result[0].level
 							var sum_to_level = (curr_level + 1) * curr_level / 2
 							var wins = result[0].wins + 1 // increase wins
 							var new_level = wins == ((curr_level + 1) * curr_level / 2) ? curr_level + 1 : curr_level
 
-							con.query(`UPDATE users SET level=${new_level}, wins=wins+1 WHERE user_id=${user_id}`, function(err, result){
+							checkAchievements(user_hp, wins, result[0].losses, new_level, achievementsList)
+
+							var achievementsStr = con.escape(JSON.stringify(achievements_list))
+
+							var sql = `UPDATE users SET level=${new_level}, wins=wins+1, achievements_list=${achievementsStr} WHERE user_id=${user_id}`
+							con.query(sql, function(err, result){
 								if(err) console.log(err)
 							})
 						})
@@ -173,5 +181,42 @@ module.exports = function(app, con){
 			})
 		})
 	})
-
 }
+
+function checkAchievements(health, wins, losses, level, achievements){
+	var achievements = []
+	if(wins >= 1)
+		pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
+	if(wins >= 10)
+		pushIfNotInclude(9, achievements) // [9, "Climbing the Ladder", "Get 10 wins"],
+	if(wins >= 25)
+		pushIfNotInclude(11, achievements) // [11, "Top of the World", "Get 25 wins"],
+	if(wins >= 50)
+		pushIfNotInclude(10, achievements) // [10, "Space Pirate", "Get 50 wins"],
+	if(wins >= 100)
+		pushIfNotInclude(7, achievements) // [7, "Destroyer", "Get 100 wins"],
+
+	if(health <= 10)
+		pushIfNotInclude(2, achievements) // [2, "Clutch", "Barely beat your opponent"],
+	else if(health > 50)
+		pushIfNotInclude(18, achievements) // [18, "Easy Peasy", "Kill an opponent with more than half your health remaining"],
+
+	if(level == 15)
+		pushIfNotInclude(12, achievements) // [12, "Leveling Up", "Get to Level 15"],
+
+	if(wins + losses == 50 && wins/50 > 0.6)
+		pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
+}
+
+function pushIfNotInclude(item, list){
+	if(!list.includes(item))
+		list.push(item)
+}
+
+/* Not possible 
+            [3, "Domination", "Kill the same opponent 3 times"],
+            [4, "Revenge", "Kill an opponent that previously killed you"],
+            [8, "Hunter", "Kill 5 different opponents"],
+            [17, "Space Shooter", "Fire 500 times"],
+            [20, "Augmented Intelligence", "Get 10 kills in a row"]
+*/
