@@ -125,7 +125,7 @@ module.exports = function(app, con){
 								return
 							}
 
-							var achievementsList = JSON.parse(result[0].achievements)
+							var achievementsList = JSON.parse(result[0].achievements_list)
 
 							var curr_level = result[0].level
 							var sum_to_level = (curr_level + 1) * curr_level / 2
@@ -188,7 +188,7 @@ function checkAchievements(health, wins, losses, level, achievements){
 	if(wins >= 1)
 		pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
 	if(wins >= 10)
-		pushIfNotInclude(9, achievements) // [9, "Climbing the Ladder", "Get 10 wins"],
+		pushIfNotInclude(9, achievements) // [(9), "Climbing the Ladder", "Get 10 wins"],
 	if(wins >= 25)
 		pushIfNotInclude(11, achievements) // [11, "Top of the World", "Get 25 wins"],
 	if(wins >= 50)
