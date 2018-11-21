@@ -85,7 +85,7 @@ function checkAchievements(userId, isSafe, achievements, con){
 		var numSafe = 0
 		for(var i = 0; i < result.length; i++){
 			var session = result[i]
-			var list = JSON.parse(session.penalty)
+			var list = JSON.parse(session.penalty.replace(/'/g, '"'))
 			if(list.length == 0)
 				numSafe += 1
 			else
