@@ -81,6 +81,23 @@ function checkAchievements(userId, isSafe, achievements, con){
 		var safeSessions = result.filter(obj => obj.penalty === "[]")
 		if(safeSessions.length >= 5)
 			achievements = pushIfNotInclude(14, achievements) // [14, "Better Safe than Sorry", "Log 250 biking safe sessions"],
+
+		var numSafe = 0
+		for(var i = 0; i < result.length; i++){
+			var session = result[i]
+			var list = JSON.parse(session.penalty)
+			if(list.length == 0)
+				numSafe += 1
+			else
+				numSafe = 0
+		}
+
+		if(numSafe >= 50)
+			achievements = pushIfNotInclude(15, achievements) // [15, "Safe Landing", "Get 10 consecutive safe sessions"],
+		else if(numSafe >= 10)
+			achievements = pushIfNotInclude(16, achievements) // [16, "Getting There", "Get 5 consecutive safe sessions"],
+
+
 		var achievementsStr = con.escape(JSON.stringify(achievements))
 		var sql = `UPDATE users SET achievements_list=${achievementsStr} WHERE user_id=${userId}`
 		con.query(sql, function(err, result){
@@ -101,6 +118,4 @@ function pushIfNotInclude(item, list){
 
 /* Not possible yet
     [6, "Perfection", "Kill an opponent with only safe sessions"],
-    [15, "Safe Landing", "Get 50 consecutive safe sessions"],
-    [16, "Getting There", "Get 10 consecutive safe sessions"],
 */
