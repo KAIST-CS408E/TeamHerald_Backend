@@ -217,8 +217,8 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 		var opponents = []
 		var killsInRow = 0
 		for(var i = 0; i < result.length; i++){
-			var loser = result[0].loser_id
-			var winner = result[0].winner_id
+			var loser = result[i].loser_id
+			var winner = result[i].winner_id
 
 			if(loser !== userId.replace(/"/g, "") && !opponents.includes(loser))
 				opponents.push(loser)
