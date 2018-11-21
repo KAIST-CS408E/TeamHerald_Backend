@@ -142,6 +142,11 @@ module.exports = function(app, con){
 							con.query(sql, function(err, result){
 								if(err) console.log(err)
 							})
+
+							var sql = `INSERT INTO battles (winner_id, loser_id, winner_remaining_hp) VALUES (${user_id}, ${opp_id}, ${user_hp})`
+							con.query(sql, function(err, result){
+								if(err) console.log(err)
+							})
 						})
 					}
 

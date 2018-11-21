@@ -99,13 +99,6 @@ function pushIfNotInclude(item, list){
 	return list
 }
 
-
-/*
-            
-            
-            
-*/
-
 /* Not possible yet
     [6, "Perfection", "Kill an opponent with only safe sessions"],
     [15, "Safe Landing", "Get 50 consecutive safe sessions"],
