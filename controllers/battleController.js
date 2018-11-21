@@ -235,6 +235,10 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 				killsInRow = 0
 		}
 
+		console.log(numTimesKilled)
+		console.log(opponents)
+		console.log(killsInRow)
+
 		if(numTimesKilled == 3) 
 			achievements = pushIfNotInclude(3, achievements) // [3, "Domination", "Kill the same opponent 3 times"],
 
