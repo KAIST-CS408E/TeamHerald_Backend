@@ -221,16 +221,16 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 			var winner = result[i].winner_id
 			console.log(i, loser)
 
-			if(loser !== userId.replace(/"/g, "") && !opponents.includes(loser))
+			if(loser !== userId.replace(/'/g, "") && !opponents.includes(loser))
 				opponents.push(loser)
 
-			if(loser === oppId.replace(/"/g, ""))
+			if(loser === oppId.replace(/'/g, ""))
 				numTimesKilled += 1
 
-			if(winner === oppId.replace(/"/g, ""))
+			if(winner === oppId.replace(/'/g, ""))
 				revenge = true
 
-			if(winner === userId.replace(/"/g, ""))
+			if(winner === userId.replace(/'/g, ""))
 				killsInRow += 1
 			else
 				killsInRow = 0
