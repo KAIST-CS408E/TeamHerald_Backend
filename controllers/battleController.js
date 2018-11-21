@@ -241,13 +241,13 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 		console.log(killsInRow )
 		console.log(oppId)
 
-		if(numTimesKilled == 3) 
+		if(numTimesKilled >= 3) 
 			achievements = pushIfNotInclude(3, achievements) // [3, "Domination", "Kill the same opponent 3 times"],
 
 		if(revenge)
 			achievements = pushIfNotInclude(4, achievements) // [4, "Revenge", "Kill an opponent that previously killed you"],
 
-		if(opponents.length == 5)
+		if(opponents.length >= 5)
 			achievements = pushIfNotInclude(4, achievements) // [8, "Hunter", "Kill 5 different opponents"],
 
 		if(killsInRow >= 10)
