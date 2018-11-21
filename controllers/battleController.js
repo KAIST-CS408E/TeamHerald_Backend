@@ -82,7 +82,7 @@ module.exports = function(app, con){
 		var user_id = con.escape(req.body.user_id)
 		var opp_id = con.escape(req.body.opp_id)
 
-		var sql = `SELECT energy, power FROM users WHERE user_id=${user_id}`
+		var sql = `SELECT energy, power, lasers_fired FROM users WHERE user_id=${user_id}`
 		con.query(sql, function(err, result){
 			if(err || result.length == 0){
 				console.log(err)
@@ -92,6 +92,7 @@ module.exports = function(app, con){
 
 			var power_points = result[0].power
 			var energy_points = result[0].energy
+			var lasers_fired = result[0].lasers_fired
 
 			var sql = `SELECT * FROM friends WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
 			con.query(sql, function(err, result){
@@ -137,13 +138,13 @@ module.exports = function(app, con){
 							con.query(sql, function(err, result){
 								if(err) console.log(err)
 
-								checkAndUpdateAchievements(user_id, opp_id, user_hp, wins, losses, new_level, achievementsList, con)
+								checkAndUpdateAchievements(user_id, opp_id, user_hp, wins, losses, new_level, lasers_fired, achievementsList, con)
 							})
 						})
 					}
 
 					// use up all of users energy
-					var sql = `UPDATE users SET energy=${energy_points} WHERE user_id=${user_id}`
+					var sql = `UPDATE users SET energy=${energy_points}, lasers_fired=lasers_fired+1 WHERE user_id=${user_id}`
 					con.query(sql, function(err, result){
 						if(err){
 							console.log(err)
@@ -182,7 +183,7 @@ module.exports = function(app, con){
 	})
 }
 
-function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, achievements, con){
+function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, lasersFired, achievements, con){
 	if(wins >= 1)
 		achievements = pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
 	if(wins >= 3)
@@ -204,6 +205,10 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 
 	if(wins + losses >= 10 && wins/(wins + losses) > 0.6)
 		achievements = pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
+
+	if(lasersFired + 1 == 50) 
+		achievements = pushIfNotInclude(17, achievements) // [17, "Space Shooter", "Fire 500 times"],
+
 
 	var sql = `SELECT * FROM battles WHERE winner_id=${userId} OR loser_id=${userId}`
 	con.query(sql, function(err, result){
@@ -262,7 +267,3 @@ function pushIfNotInclude(item, list){
 
 	return list
 }
-
-/* Not possible 
-            [17, "Space Shooter", "Fire 500 times"],
-*/

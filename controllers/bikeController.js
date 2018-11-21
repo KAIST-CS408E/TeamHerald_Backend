@@ -93,9 +93,9 @@ function checkAchievements(userId, isSafe, achievements, con){
 		}
 
 		if(numSafe >= 10)
-			achievements = pushIfNotInclude(15, achievements) // [15, "Safe Landing", "Get 10 consecutive safe sessions"],
+			achievements = pushIfNotInclude(15, achievements) // [15, "Safe Landing", "Get 50 consecutive safe sessions"],
 		else if(numSafe >= 5)
-			achievements = pushIfNotInclude(16, achievements) // [16, "Getting There", "Get 5 consecutive safe sessions"],
+			achievements = pushIfNotInclude(16, achievements) // [16, "Getting There", "Get 10 consecutive safe sessions"],
 
 
 		var achievementsStr = con.escape(JSON.stringify(achievements))
