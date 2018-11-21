@@ -247,10 +247,10 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 			achievements = pushIfNotInclude(4, achievements) // [4, "Revenge", "Kill an opponent that previously killed you"],
 
 		if(opponents.length >= 5)
-			achievements = pushIfNotInclude(4, achievements) // [8, "Hunter", "Kill 5 different opponents"],
+			achievements = pushIfNotInclude(8, achievements) // [8, "Hunter", "Kill 5 different opponents"],
 
 		if(killsInRow >= 10)
-			achievements = pushIfNotInclude(4, achievements) // [20, "Augmented Intelligence", "Get 10 kills in a row"]
+			achievements = pushIfNotInclude(20, achievements) // [20, "Augmented Intelligence", "Get 10 kills in a row"]
 
 
 		var achievementsStr = con.escape(JSON.stringify(achievements))
