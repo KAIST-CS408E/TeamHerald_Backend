@@ -206,7 +206,7 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 	if(wins + losses >= 10 && wins/(wins + losses) > 0.6)
 		achievements = pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
 
-	if(lasersFired + 1 == 50) 
+	if(lasersFired + 1 >= 50) 
 		achievements = pushIfNotInclude(17, achievements) // [17, "Space Shooter", "Fire 500 times"],
 
 
