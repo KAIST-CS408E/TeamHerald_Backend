@@ -219,6 +219,7 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 		for(var i = 0; i < result.length; i++){
 			var loser = result[i].loser_id
 			var winner = result[i].winner_id
+			console.log(i, loser)
 
 			if(loser !== userId.replace(/"/g, "") && !opponents.includes(loser))
 				opponents.push(loser)
@@ -237,7 +238,8 @@ function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, 
 
 		console.log(numTimesKilled)
 		console.log(opponents)
-		console.log(killsInRow)
+		console.log(killsInRow )
+		console.log(oppId)
 
 		if(numTimesKilled == 3) 
 			achievements = pushIfNotInclude(3, achievements) // [3, "Domination", "Kill the same opponent 3 times"],
