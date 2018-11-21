@@ -131,21 +131,13 @@ module.exports = function(app, con){
 							var sum_to_level = (curr_level + 1) * curr_level / 2
 							var wins = result[0].wins + 1 // increase wins
 							var new_level = wins == ((curr_level + 1) * curr_level / 2) ? curr_level + 1 : curr_level
-
-							achievementsList = checkAchievements(user_hp, wins, result[0].losses, new_level, achievementsList)
-
-							var achievementsStr = con.escape(JSON.stringify(achievementsList))
-
-							console.log(achievementsStr)
-
-							var sql = `UPDATE users SET level=${new_level}, wins=wins+1, achievements_list=${achievementsStr} WHERE user_id=${user_id}`
-							con.query(sql, function(err, result){
-								if(err) console.log(err)
-							})
+							var losses = result[0].losses
 
 							var sql = `INSERT INTO battles (winner_id, loser_id, winner_remaining_hp) VALUES (${user_id}, ${opp_id}, ${user_hp})`
 							con.query(sql, function(err, result){
 								if(err) console.log(err)
+
+								checkAndUpdateAchievements(user_id, opp_id, user_hp, wins, losses, new_level, achievementsList, con)
 							})
 						})
 					}
@@ -190,7 +182,7 @@ module.exports = function(app, con){
 	})
 }
 
-function checkAchievements(health, wins, losses, level, achievements){
+function checkAndUpdateAchievements(userId, oppId, health, wins, losses, level, achievements, con){
 	if(wins >= 1)
 		achievements = pushIfNotInclude(1, achievements) // [1, "Victory!", "Get your first win"],
 	if(wins >= 3)
@@ -213,7 +205,55 @@ function checkAchievements(health, wins, losses, level, achievements){
 	if(wins + losses >= 10 && wins/(wins + losses) > 0.6)
 		achievements = pushIfNotInclude(19, achievements) // [19, "Masterful", "Have a win/loss ratio above 60% with more than 50 battles"],
 
-	return achievements
+	var sql = `SELECT * FROM battles WHERE winner_id=${userId} OR loser_id=${userId}`
+	con.query(sql, function(err, result){
+		if(err){
+			console.log(err)
+			return
+		}
+
+		var revenge = false
+		var numTimesKilled = 0
+		var opponents = []
+		var killsInRow = 0
+		for(var i = 0; i < result.length; i++){
+			var loser = result[0].loser_id
+			var winner = result[0].winner_id
+
+			if(loser !== userId.replace(/"/g, "") && !opponents.includes(loser))
+				opponents.push(loser)
+
+			if(loser === oppId.replace(/"/g, ""))
+				numTimesKilled += 1
+
+			if(winner === oppId.replace(/"/g, ""))
+				revenge = true
+
+			if(winner === userId.replace(/"/g, ""))
+				killsInRow += 1
+			else
+				killsInRow = 0
+		}
+
+		if(numTimesKilled == 3) 
+			achievements = pushIfNotInclude(3, achievements) // [3, "Domination", "Kill the same opponent 3 times"],
+
+		if(revenge)
+			achievements = pushIfNotInclude(4, achievements) // [4, "Revenge", "Kill an opponent that previously killed you"],
+
+		if(opponents.length == 5)
+			achievements = pushIfNotInclude(4, achievements) // [8, "Hunter", "Kill 5 different opponents"],
+
+		if(killsInRow >= 10)
+			achievements = pushIfNotInclude(4, achievements) // [20, "Augmented Intelligence", "Get 10 kills in a row"]
+
+
+		var achievementsStr = con.escape(JSON.stringify(achievements))
+		var sql = `UPDATE users SET level=${level}, wins=wins+1, achievements_list=${achievementsStr} WHERE user_id=${userId}`
+		con.query(sql, function(err, result){
+			if(err) console.log(err)
+		})
+	})
 }
 
 function pushIfNotInclude(item, list){
@@ -224,9 +264,5 @@ function pushIfNotInclude(item, list){
 }
 
 /* Not possible 
-            [3, "Domination", "Kill the same opponent 3 times"],
-            [4, "Revenge", "Kill an opponent that previously killed you"],
-            [8, "Hunter", "Kill 5 different opponents"],
             [17, "Space Shooter", "Fire 500 times"],
-            [20, "Augmented Intelligence", "Get 10 kills in a row"]
 */
