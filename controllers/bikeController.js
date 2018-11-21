@@ -92,9 +92,9 @@ function checkAchievements(userId, isSafe, achievements, con){
 				numSafe = 0
 		}
 
-		if(numSafe >= 50)
+		if(numSafe >= 10)
 			achievements = pushIfNotInclude(15, achievements) // [15, "Safe Landing", "Get 10 consecutive safe sessions"],
-		else if(numSafe >= 10)
+		else if(numSafe >= 5)
 			achievements = pushIfNotInclude(16, achievements) // [16, "Getting There", "Get 5 consecutive safe sessions"],
 
 
