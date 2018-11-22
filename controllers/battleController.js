@@ -50,7 +50,7 @@ module.exports = function(app, con){
 	app.post('/start_battle', function(req, res){
 		var user_id = con.escape(req.body.user_id)
 		var opp_id = con.escape(req.body.opp_id)
-		var sql  = `SELECT * FROM friends WHERE (friend1_id=${user_id} OR friend2_id=${user_id}) AND in_battle=true`
+		var sql  = `SELECT * FROM friends WHERE ((friend1_id=${user_id} OR friend2_id=${user_id}) OR (friend1_id=${opp_id} OR friend2_id=${opp_id})) AND in_battle=true`
 
 		con.query(sql, function(err, result){
 			if(err){
