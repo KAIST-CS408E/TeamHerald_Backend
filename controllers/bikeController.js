@@ -29,7 +29,7 @@ module.exports = function(app, con){
 
 			var penalties_str = con.escape('[' + truePenaltyArray.map(entry => con.escape(entry)).join(', ') + ']')
 
-			var log_str = '[]'
+			var log_str = con.escape('[]')
 			if(req.body.log)
 				var log_str = con.escape('[' + req.body.log.map(entry => con.escape(entry)).join(', ') + ']')
 
