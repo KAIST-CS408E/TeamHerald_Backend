@@ -41,15 +41,15 @@ module.exports = function(app, con){
 					return
 				}
 				var changePowerStr = "power"
-				if(req.body.duration >= 300 & req.body.penalty.length == 0)
+				if(req.body.duration >= 300 & truePenaltyArray.length == 0)
 					changePowerStr = "IF(power+2 > 10, 10, power+2)"
-				else if(req.body.penalty.length > 0)
+				else if(truePenaltyArray.length > 0)
 					changePowerStr = "IF(power-2 < 1, 1, power-2)"
 
-				checkAchievements(user_id, req.body.penalty.length == 0, achievementsList, con)
+				checkAchievements(user_id, truePenaltyArray.length == 0, achievementsList, con)
 
 				// Energy: 20 points per 5 mins of biking - 10 points per penalty
-				var new_energy = Math.floor(20 * duration/300) - 10 * req.body.penalty.length
+				var new_energy = Math.floor(20 * duration/300) - 10 * truePenaltyArray.length
 				if(new_energy < 0) new_energy = 0
 				var sql = `UPDATE users SET energy=IF(energy+${new_energy}>100, 100, energy+${new_energy}), power=${changePowerStr} WHERE user_id=${user_id}`
 				con.query(sql, function(err, result){
