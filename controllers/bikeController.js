@@ -16,8 +16,22 @@ module.exports = function(app, con){
 
 			var distance = req.body.distance
 			var duration = req.body.duration
-			var penalties_str = con.escape('[' + req.body.penalty.map(entry => con.escape(entry)).join(', ') + ']')
-			var log_str = con.escape('[' + req.body.log.map(entry => con.escape(entry)).join(', ') + ']')
+			var truePenaltyArray = []
+			var laneFound = false
+			for(var i = 0; i < req.body.penalty.length; i++){
+				if(req.body.penalty[i] === "lane")
+					laneFound = true
+				else
+					truePenaltyArray.push(req.body.penalty[i])
+			}
+			if(!laneFound)
+				truePenaltyArray.push("lane")
+
+			var penalties_str = con.escape('[' + truePenaltyArray.map(entry => con.escape(entry)).join(', ') + ']')
+
+			var log_str = '[]'
+			if(req.body.log)
+				var log_str = con.escape('[' + req.body.log.map(entry => con.escape(entry)).join(', ') + ']')
 
 			var sql = `INSERT INTO sessions (user_id, duration, distance, penalty, log) VALUES (${user_id}, ${distance}, ${duration}, ${penalties_str}, ${log_str})`
 			con.query(sql, function(err, result){
