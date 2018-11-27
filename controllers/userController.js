@@ -31,7 +31,7 @@ module.exports = function(app, con){
 				}
 				var friend_str = result.map(entry => entry.friend1_id === data.userData.user_id ? con.escape(entry.friend2_id) : con.escape(entry.friend1_id)).join(', ')
 				con.query(`SELECT user_id, color_1, color_2, color_3, level FROM users WHERE user_id IN (${friend_str})`, function(err, result){
-					if(err){
+					if(err && !(friend_str === "")){
 						console.log(err)
 						res.send(data)
 						return
