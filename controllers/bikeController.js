@@ -66,7 +66,7 @@ module.exports = function(app, con){
 	})
 
 	app.get("/get_sessions", function(req, res){
-		var sql = `SELECT datetime, duration, distance, penalty FROM sessions WHERE user_id=${con.escape(req.query.user_id)}`
+		var sql = `SELECT DATE_ADD(datetime, INTERVAL 9 HOUR), duration, distance, penalty FROM sessions WHERE user_id=${con.escape(req.query.user_id)}`
 		con.query(sql, function(err, result){
 			if(err){
 				console.log(err)
