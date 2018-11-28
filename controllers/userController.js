@@ -40,7 +40,7 @@ module.exports = function(app, con){
 					data.friends = result
 					if(friend_str === "")
 						data.friends = []
-					var sql = `SELECT datetime, duration, distance, penalty FROM sessions WHERE user_id=${userId}`
+					var sql = `SELECT DATE_ADD(datetime, INTERVAL 9 HOUR), duration, distance, penalty FROM sessions WHERE user_id=${userId}`
 					con.query(sql, function(err, result){
 						if(err){
 							console.log(err)
